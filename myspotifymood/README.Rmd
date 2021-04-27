@@ -1,6 +1,6 @@
 ---
-title: "botscan"
-author: "Kurt Wirth"
+title: "myspotify"
+author: "Alexa Pope"
 date: "`r Sys.Date()`"
 output: github_document
 ---
@@ -8,9 +8,8 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-A package extending the capability of [botometer](https://github.com/IUNetSci/botometer-python) 
-by measuring suspected bot activity in any given Twitter query. This README is 
-derived from Matt Kearney's excellent [rtweet]((https://github.com/mkearney/rtweet)) 
+A package extending the capability of [spotifyr](https://github.com/charlie86/spotifyr) 
+by measuring the valence (mood) and popularity of the tracks on the user's specified playlist. This README is derived from Matt Kearney's excellent [rtweet]((https://github.com/mkearney/rtweet)) 
 documentation.
 
 ## Install
@@ -21,108 +20,50 @@ Install from GitHub with the following code:
 if (!requireNamespace("devtools", quietly = TRUE)) {
   install.packages("devtools")
 }
-devtools::install_github("kurtawirth/botscan")
+devtools::install_github("alexapope/myspotifymood")
 ```
 
-This package connects <code>botometer</code> to <code>rtweet</code>. As a 
-result, each user must have previously acquired authentication from Twitter and 
-instructions to do that [can be found here](http://rtweet.info/articles/auth.html).
+First, set up a Dev account with Spotify to access their Web API here. This will give you your Client ID and Client Secret. Once you have those, you can pull your access token into R with get_spotify_access_token().
 
-Users will also need to install the latest version of Python, as botscan 
-accesses Python-based <code>botometer</code>, as well as acquiring a [Mashape 
-key](https://market.mashape.com/OSoMe/botometer). Doing so requires a Mashape
-account. BotOMeter's default rate limit is 2,000 inquiries per day, so users
-are strongly encouraged to sign up for a (free) BotOMeter Pro key. Instructions 
-to do that [can be found here](https://market.mashape.com/OSoMe/botometer-pro/pricing).
+The easiest way to authenticate is to set your credentials to the System Environment variables SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET. The default arguments to get_spotify_access_token() (and all other functions in this package) will refer to those. Alternatively, you can set them manually and make sure to explicitly refer to your access token in each subsequent function call.This authentication process is directly derived from Charlie Thompson's exceptionally detailed [spotifyr] ((https://github.com/charlie86/spotifyr)) authorization documentation. 
 
 ## Usage
 
-There are two functions currently live for botscan. 
+This is the function that is currently live for myspotifymood. 
 
 To begin, the user must first enter the following code, inserting their keys 
 where appropriate:
 
 ```{setup instructions, eval = FALSE}
-bom <- setup_botscan("YourMashapeKey", 
-                     "YourTwitterConsumerKey", 
-                     "YourTwitterConsumerSecret", 
-                     "YourTwitterAccessToken", 
-                     "YourTwitterAccessTokenSecret")
+my_spotify_mood = function(username = "", client_id = "", 
+                           client_secret = ""){ 
+  Sys.setenv(client_id)
+  Sys.setenv(client_secret)
+  access_token = get_spotify_access_token()
 ```
 
 Currently, this must be done at the start of every session.
 
-Next, the fun begins with <code>botscan</code>.
+Next, the fun begins with <code>myspotifymood</code>.
 
-Its first argument takes any Twitter query, complete with boolean operators if
-desired, surrounded by quotation marks.
+Its first argument takes the Spotify user's username and utilizes it to extract 
+the user's necessary data.
 
-The next argument determines how long an open stream of tweets will be
-collected, with a default of 30 seconds. In order to gather a specific volume
-of tweets, it is suggested that the user run a small initial test to determine
-a rough rate of tweets for the given query. If the user prefers to use Twitter's
-Search API, the next argument allows the user to specify the number of tweets
-to extract.
+The second and third argument take the user's Spotify authentication codes from 
+the Spotify API (Client ID and Client Secret) in order for the user to be able to
+utilize SpotifyR.
 
-The fourth argument determines whether retweets will be included if using the
-Search API and the fifth takes a number, less than one, that represents the 
-desired threshold at which an account should be considered a bot. The default 
-is .430, a reliable threshold as described by BotOMeter's creator [here](http://www.pewresearch.org/fact-tank/2018/04/19/qa-how-pew-research-center-identified-bots-on-twitter/). 
-
-The sixth argument allows the user to toggle between user-level and
-conversation-level summaries.  The default is set to conversation-level
-data, understood as the proportion of the queried conversation that is 
-bot-related.  If <code>user_level</code> is set to <code>TRUE</code>, 
-<code>botscan</code> will return user-level data, understood to be the 
-proportion of the queried conversation's authors that are estimated to be bots.
-
-The seventh argument allows the user to toggle between Twitter's Search and 
-Streaming APIs. The default is set to using the Streaming API, as it is 
-unfiltered by Twitter and thus produces more accurate data. Search API data is 
-filtered to eliminate low quality content, thus negatively impacting 
-identification of bot accounts.
-
-The eighth argument allows the user to opt out of auto-parsing of data, 
-primarily useful when dealing with large volumes of data. The ninth and final 
-argument defaults to keeping the user informed about the progress of the tool 
-in gathering and processing data with the <code>verbose</code> package but 
-can be toggled off.
+The fourth argument determines what playlist the user will be extracting data like tracks and track audio features from. 
 
 ```{r usage, eval = FALSE}
-## load botscan
-library(botscan)
+## load my_spotify_mood
+library(my_spotify_mood)
 
-## Enter query surrounded by quotation marks
-botscan("#rstats")
-#> [1] 0.1642276
+## Enter Client ID and Secret ID  surrounded by quotation marks
+my_spotify_mood(client_id, client_secret, username, personal_playlist)
 
-## Result is percentage - in this case, 16.42276%.
+## Result is a visualization of one's playlist track's valence, genre, and popularity being compared.
 
-## If desired, choose the stream time and threshold
-botscan("#rstats", timeout = 60, threshold = .995)
-#> [1] 0.02398524
-
-## Alternatively, choose to use Twitter's Search API and options associated with it.
-botscan("#rstats", n_tweets = 1500, retweets = TRUE, search = TRUE, threshold = .995)
-#> [1] 0.03270932
-
-## Result is percentage - in this case, 2.398524%.
-
-##If desired, scan only users rather than the conversation as a whole.
-botscan("#rstats", user_level = TRUE)
-#> [1] 0.1505155
-
-## Result is percentage - in this case, 15.05155%.
 ```
 
-This process takes some time, as botscan is currently built on a loop of 
-BotOMeter. Efforts to mainstream this process are set as future goals. A 
-standard pull of tweets via <code>botscan</code> processes approximately 11 to 
-12 accounts per minute in addition to the initial tweet streaming.
-
-Twitter rate limits cap the number of Search results returned to 18,000 every 
-15 minutes. Thus, excessive use of <code>botscan</code> in a short amount of 
-time may result in a warning and inability to pull results.  In this event, 
-simply wait 15 minutes and try again.  In an effort to avoid the Twitter rate 
-limit cap, <code>botscan</code> defaults to returning 1000 results when 
-<code>search = TRUE</code>.
+This function is a work in process but wishes to help it's user get a better understanding of their own music taste in accordance with the already established package by Charlie Thompson, [spotifyr] ((https://github.com/charlie86/spotifyr)). This function cannot be utilized if the user doesn't have a Spotify account, and doesn't go through the authorization process. 

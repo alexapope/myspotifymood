@@ -20,19 +20,19 @@
 
 # ESTABLISH CONNECTION SPOTIFY API
 
-my_spotify_mood = function(x, y, z){
-  "lexapopee" = x
-  Sys.setenv("cd4f903eee184055825608bae2eb0cf2" = y)
-  Sys.setenv("9cfd998fca23438bbc966299611b5168" = z)
+my_spotify_mood = function(username = "lexapopee", client_id = "5b40eab3fe124c84a58aa5ed11ee6d0b",
+                           client_secret = "a1864c08c4cb4649a655278cab76d8a6"){
+  Sys.setenv(client_id)
+  Sys.setenv(client_secret)
   access_token = get_spotify_access_token()
 
   # GET sPECIFIC PLAYLIST AUDIO FEATURES
 
+  playlists = spotifyr::get_user_playlists(x)
   personal_playlist = spotifyr::get_playlist_audio_features("spotify:playlist:7IjYJeoglgPd0fLXQs6qtm" = p)
 
   # GET PLAYLIST TRACKS VALENCE
 
-  playlists = spotifyr::get_user_playlists("lexapopee") %>%
     playlist_track_valence = spotifyr::get_playlist_tracks(p)%>%
     spotifyr::get_playlist_audio_features(p)%>%
     group_by(track.name, valence)%>%
@@ -62,4 +62,9 @@ my_spotify_mood = function(x, y, z){
     annotate('text', 0.25 / 2, 0.05, label = "sad") +
     labs(x= "valence", y= "popularity") +
     ggtitle("Your Music Taste in Quadrants", "Defining your music taste based on a specifc Spotify Playlist")
+
 }
+
+
+
+
