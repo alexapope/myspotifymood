@@ -5,7 +5,7 @@ Alexa Pope
 
 A package extending the capability of \[spotifyr\]
 (<https://github.com/charlie86/spotifyr>) by measuring the valence
-(mood) and popularity of the tracks on the user’s specified playlist.
+(happiness) of the tracks on the user’s specified playlist.
 This README is derived from Matt Kearney’s excellent
 [rtweet](https://github.com/mkearney/rtweet) documentation.
 
