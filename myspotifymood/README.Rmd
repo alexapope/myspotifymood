@@ -1,5 +1,5 @@
 ---
-title: "myspotify"
+title: "myspotifymood"
 author: "Alexa Pope"
 date: "`r Sys.Date()`"
 output: github_document

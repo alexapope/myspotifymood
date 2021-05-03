@@ -1,7 +1,7 @@
 #' Visualizes Valence From Spotify
 #'
 #' A function that allows the user to retrieve the individual tracks valance
-#' (happiness level) on a specific playlist.
+#' (happiness level) of a specific playlist.
 #'
 #' @author Alexa Pope
 #'
@@ -14,8 +14,7 @@
 #'
 #' @param  playlists The user's chosen playlist's id.
 #'
-#' @return A visualization of the valence levels of every track on a specific
-#' playlist of the user's choosing.
+#' @return A visualization.
 #'
 #' @examples
 #' myspotifymood("billybob08", "cbfj2895nbdudnejf2", "2kjgkjbrgrslenfjkrnjsne",
@@ -46,6 +45,7 @@ my_spotify_mood = function(username, client_id, client_secret, playlists){
     playlist_track_valence %>% ggplot(aes(x = valence, y = track.name, fill = ..x..)) +
     geom_col()
 }
+
 
 
 

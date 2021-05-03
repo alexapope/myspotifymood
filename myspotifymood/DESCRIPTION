@@ -7,8 +7,11 @@ Authors@R:
            role = c("aut", "cre"),
            email = "popealexa00@gmail.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: A function that allows the user to retrieve the individual tracks 
-on a specific playlist.
+Description: This package  allows the user to retrieve the individual tracks 
+   valance (happiness level) of a specific playlists in order to help it's user 
+   get a better understanding of their music taste. The function, when utilzied, 
+   produces a visualization where the user will be able to view the individual
+   valence scores of all of the tracks on the data extracted playlist.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
